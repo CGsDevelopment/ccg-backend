@@ -35,22 +35,27 @@ io.on('connection', (socket) => {
         socket.to(data.room).emit("receive_message", data.message);
         // console.log("room: " , data.room, "| msg: ", data.message);
     });
+
+    // sends individual message to each socket
+    // socket.to(socket.id).emit("individual_message", "hello");
 });
 
 mongoose.connect(mongoDBURL);
 
 const userSchema = {
-    userID: String,
+    userID: {type: String, unique: true, required: true},
+    socketID: {type: String, unique: true, required: true},
     gameRoom: String
 }
 
 const gameRoomSchema = {
-    gameRoom: String,
+    gameRoom: {type: String, unique: true, required: true},
     userIDs: [userSchema]
 }
 
 const GameRoom = mongoose.model("GameRoom", gameRoomSchema);
+const User = mongoose.model("User", userSchema);
 
 server.listen(PORT, () => {
-    console.log(`Server Started at ${PORT}`)
+    console.log(`Server Started at ${PORT}`);
 })
